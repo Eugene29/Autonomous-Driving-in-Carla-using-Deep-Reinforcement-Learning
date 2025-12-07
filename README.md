@@ -7,7 +7,7 @@ ROOT/Carla
 run.sh (change ROOT directory in here)
 
 ## Known errors
-Sometimes I get the following error. Rerunning the script seems to help...
+Sometimes I get the following error (especially the first time I run it). Rerunning the script seems to fix it...
 ```
 Client version: 0.9.16
 ERROR:root:Connection has been refused by the server.
