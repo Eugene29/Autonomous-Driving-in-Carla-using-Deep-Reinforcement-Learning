@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+*.jpg
+*.png
+*.txt
+*.log
+*.mp4
+
+# folders
+logs
+runs
+
+# include
+!info/**
+!requirements.txt
