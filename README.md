@@ -1,12 +1,10 @@
 This folder contains scripts for running CARLA in headless mode.
 
-## File structure
-ROOT  
-ROOT/Carla  
-ROOT/Autonomous-Driving-in-Carla-using-Deep-Reinforcement-Learning
+## Additional dependency (Carla)
+ROOT/Carla
 
 ## Entry script
-run.sh (change ROOT directory here)
+run.sh (change ROOT directory in here)
 
 ## Known errors
 Sometimes I get the following error. Rerunning the script seems to help...
