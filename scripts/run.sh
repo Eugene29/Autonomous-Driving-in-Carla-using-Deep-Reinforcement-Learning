@@ -6,7 +6,8 @@ pkill -9 -f CarlaUE4 2>/dev/null || true
 fuser -k 2000/tcp 2>/dev/null || true
 sleep 2
 
-ROOT="<Your ROOT folder>"
+ROOT="/lus/eagle/projects/datascience_collab/eku/Carla_RL"
+# ROOT="<Your ROOT folder>"
 cd $ROOT
 module load conda
 conda activate carla
@@ -25,12 +26,13 @@ trap 'kill ${SERVER_PID} 2>/dev/null || true' EXIT
 echo "Started CARLA server (pid ${SERVER_PID}) on ${CARLA_HOST}:${CARLA_PORT}"
 
 # Give the server a moment to come up
-sleep 10
+sleep 15
+echo "Connecting to the server..."
 
 # Run the driver (set --train True to train)
-cd $ROOT/Autonomous-Driving-in-Carla-using-Deep-Reinforcement-Learning
-rm ./frames/*.png
+rm frames/*.png 2>/dev/null || true
+rm run.mp4 2>/dev/null || true
 python continuous_driver.py --exp-name ppo --train False --town Town02 --test-timesteps 100
 
 # Assemble frames into a video without ffmpeg (uses OpenCV)
-python $ROOT/assemble_video.py "$FRAME_DIR" "$OUTPUT_VIDEO" "$FPS"
+python scripts/assemble_video.py "$FRAME_DIR" "$OUTPUT_VIDEO" "$FPS"
