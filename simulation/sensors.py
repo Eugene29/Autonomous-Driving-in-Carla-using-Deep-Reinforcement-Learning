@@ -1,9 +1,13 @@
 import math
+import os
 import numpy as np
 import weakref
 import pygame
 from simulation.connection import carla
 from simulation.settings import RGB_CAMERA, SSC_CAMERA
+
+# Optional output directory for saving frames in headless runs.
+FRAME_OUTPUT_DIR = os.environ.get("CARLA_FRAME_DIR", "frames")
 
 
 # ---------------------------------------------------------------------|
@@ -37,6 +41,14 @@ class CameraSensor():
         self = weak_self()
         if not self:
             return
+        # Save to disk for later inspection in headless mode.
+        if FRAME_OUTPUT_DIR:
+            os.makedirs(FRAME_OUTPUT_DIR, exist_ok=True)
+            image.save_to_disk(
+                f"{FRAME_OUTPUT_DIR}/{image.frame:06d}.png",
+                carla.ColorConverter.CityScapesPalette,
+            )
+
         image.convert(carla.ColorConverter.CityScapesPalette)
         placeholder = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
         placeholder1 = placeholder.reshape((image.width, image.height, 4))
@@ -123,4 +135,3 @@ class CollisionSensor:
         impulse = event.normal_impulse
         intensity = math.sqrt(impulse.x ** 2 + impulse.y ** 2 + impulse.z ** 2)
         self.collision_data.append(intensity)
-
