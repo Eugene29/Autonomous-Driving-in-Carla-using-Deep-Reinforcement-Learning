@@ -242,16 +242,15 @@ class CarlaEnvironment():
 
             if len(self.collision_history) != 0:
                 done = True
-                reward = -10
+                reward = -1000
+                print(f"Episode ended: collision")
             elif self.distance_from_center > self.max_distance_from_center:
-                done = True
                 reward = -10
-            elif self.episode_start_time + 10 < time.time() and self.velocity < 1.0:
+            elif self.episode_start_time + 1 < time.time() and self.velocity < 1.0:
                 reward = -10
-                done = True
+                # done = True
             elif self.velocity > self.max_speed:
                 reward = -10
-                done = True
 
             # Interpolated from 1 when centered to 0 when 3 m from center
             centering_factor = max(1.0 - self.distance_from_center / self.max_distance_from_center, 0.0)
@@ -271,9 +270,11 @@ class CarlaEnvironment():
 
             if self.timesteps >= 7500:
                 done = True
+                print(f"Episode ended: max_timesteps (7500)")
             elif self.current_waypoint_index >= len(self.route_waypoints) - 2:
                 done = True
                 self.fresh_start = True
+                print(f"Episode ended: route_completed")
                 if self.checkpoint_frequency is not None:
                     if self.checkpoint_frequency < self.total_distance//2:
                         self.checkpoint_frequency += 2
