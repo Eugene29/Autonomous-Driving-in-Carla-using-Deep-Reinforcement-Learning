@@ -7,15 +7,12 @@ ROOT/Carla
 run.sh (change ROOT directory in here)
 
 ## Known errors
-Sometimes I get the following error (especially the first time I run it). Rerunning the script seems to fix it...
+It takes a couple tries for the client to connect to Carla server.
 ```
-Client version: 0.9.16
-ERROR:root:Connection has been refused by the server.
+INFO:root:Connecting to Carla server. This may take awhile...
+Failed to make a connection with the server: time-out of 30000ms while waiting for the simulator, make sure the simulator is ready and connected to localhost:2000
 
-Exit
-Traceback (most recent call last):
-  File "/lus/eagle/projects/datascience_collab/eku/Carla_RL/continuous_driver.py", line 297, in <module>
-    runner()
-  File "/lus/eagle/projects/datascience_collab/eku/Carla_RL/continuous_driver.py", line 115, in runner
-    env = CarlaEnvironment(client, world,town, checkpoint_frequency=None)
+Client version: 0.9.16
+WARNING:root:Connection failed. Retrying...
+INFO:root:Connection established successfully.
 ```
