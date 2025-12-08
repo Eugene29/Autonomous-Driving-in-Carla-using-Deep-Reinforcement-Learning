@@ -3,7 +3,7 @@ import random
 import numpy as np
 import pygame
 from simulation.connection import carla
-from simulation.sensors import CameraSensor, CameraSensorEnv, CollisionSensor
+from simulation.sensors import Sensor, CameraSensorEnv, CollisionSensor
 from simulation.settings import *
 
 
@@ -72,12 +72,12 @@ class CarlaEnvironment():
             self.actor_list.append(self.vehicle)
 
 
-            # Camera Sensor
-            self.camera_obj = CameraSensor(self.vehicle)
+            # Sensors (configured in settings.py)
+            self.camera_obj = Sensor(self.vehicle, MODEL_SENSORS, VISUAL_SENSORS)
             while(len(self.camera_obj.front_camera) == 0):
                 time.sleep(0.0001)
             self.image_obs = self.camera_obj.front_camera.pop(-1)
-            self.sensor_list.append(self.camera_obj.sensor)
+            self.sensor_list.extend(self.camera_obj.get_all_sensors())
 
             # Third person view of our vehicle in the Simulated env
             if self.display_on:
@@ -295,12 +295,14 @@ class CarlaEnvironment():
             if done:
                 self.center_lane_deviation = self.center_lane_deviation / self.timesteps
                 self.distance_covered = abs(self.current_waypoint_index - self.checkpoint_waypoint_index)
-                
+
+                for sensor in self.sensor_list:
+                    sensor.stop()
                 for sensor in self.sensor_list:
                     sensor.destroy()
-                
+
                 self.remove_sensors()
-                
+
                 for actor in self.actor_list:
                     actor.destroy()
             
@@ -476,6 +478,8 @@ class CarlaEnvironment():
 
     # Clean up method
     def remove_sensors(self):
+        if self.camera_obj is not None:
+            self.camera_obj.release_video()
         self.camera_obj = None
         self.collision_obj = None
         self.lane_invasion_obj = None
@@ -483,4 +487,33 @@ class CarlaEnvironment():
         self.front_camera = None
         self.collision_history = None
         self.wrong_maneuver = None
+
+    def cleanup(self):
+        """Properly stop and destroy all actors/sensors. Call before program exit."""
+        # Finalize video recording
+        if self.camera_obj is not None:
+            self.camera_obj.release_video()
+
+        for sensor in self.sensor_list:
+            if sensor.is_alive:
+                sensor.stop()
+        for sensor in self.sensor_list:
+            if sensor.is_alive:
+                sensor.destroy()
+        self.sensor_list.clear()
+
+        for actor in self.actor_list:
+            if actor.is_alive:
+                actor.destroy()
+        self.actor_list.clear()
+
+        for walker_id in self.walker_list:
+            actor = self.world.get_actor(walker_id)
+            if actor is not None:
+                actor.destroy()
+        self.walker_list.clear()
+
+        self.remove_sensors()
+        if self.display_on:
+            pygame.quit()
 

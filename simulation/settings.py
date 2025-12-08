@@ -10,7 +10,7 @@ Names of the parameters are self-explanatory therefore elimating the use of furt
 
 HOST = "localhost"
 PORT = 2000
-TIMEOUT = 20.0
+TIMEOUT = 5.0
 
 CAR_NAME = 'model3'
 EPISODE_LENGTH = 120
@@ -20,6 +20,11 @@ CONTINUOUS_ACTION = True
 VISUAL_DISPLAY = False  # keep headless-safe; set True to open pygame window
 
 
-RGB_CAMERA = 'sensor.camera.rgb'
-SSC_CAMERA = 'sensor.camera.semantic_segmentation'
+# Sensor shorthands (expanded in sensors.py via SENSOR_MAP)
+# Options: rgb, ssc, depth, instance, optical_flow, normals, lidar, radar, dvs
+MODEL_SENSORS = ['ssc']           # Input to RL model (first one -> front_camera)
+VISUAL_SENSORS = ['ssc', 'rgb']   # Saved to video for visualization
 
+# Sensor resolutions
+MODEL_RES = (160, 80)             # Small for fast NN processing
+VISUAL_RES = (854, 480)           # Larger for clear visualization

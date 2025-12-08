@@ -15,9 +15,8 @@ conda activate carla
 # Configuration (override with env vars)
 CARLA_PORT=${CARLA_PORT:-2000}
 CARLA_HOST=${CARLA_HOST:-localhost}
-FRAME_DIR=${CARLA_FRAME_DIR:-frames}
-OUTPUT_VIDEO=${OUTPUT_VIDEO:-run.mp4}
-FPS=${CARLA_FRAME_FPS:-10}
+export CARLA_VIDEO_PATH=${CARLA_VIDEO_PATH:-"figs/run.mp4"}
+mkdir -p figs
 
 # Launch CARLA server headless
 DISPLAY=${DISPLAY-} ./Carla/CarlaUE4.sh -RenderOffScreen -nosound -carla-rpc-port=${CARLA_PORT} &
@@ -25,14 +24,6 @@ SERVER_PID=$!
 trap 'kill ${SERVER_PID} 2>/dev/null || true' EXIT
 echo "Started CARLA server (pid ${SERVER_PID}) on ${CARLA_HOST}:${CARLA_PORT}"
 
-# Give the server a moment to come up
-sleep 15
-echo "Connecting to the server..."
-
 # Run the driver (set --train True to train)
-rm frames/*.png 2>/dev/null || true
-rm run.mp4 2>/dev/null || true
-python continuous_driver.py --exp-name ppo --train False --town Town02 --test-timesteps 100
-
-# Assemble frames into a video without ffmpeg (uses OpenCV)
-python scripts/assemble_video.py "$FRAME_DIR" "$OUTPUT_VIDEO" "$FPS"
+rm $CARLA_VIDEO_PATH &> /dev/null || true
+python continuous_driver.py --exp-name ppo --train False --town Town02 --test-timesteps 300

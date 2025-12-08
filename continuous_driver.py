@@ -237,9 +237,6 @@ def runner():
                     data_obj = {'cumulative_score': cumulative_score, 'episode': episode, 'timestep': timestep, 'action_std_init': action_std_init}
                     with open(chkpt_file, 'wb') as handle:
                         pickle.dump(data_obj, handle)
-                        
-            print("Terminating the run.")
-            sys.exit()
         else:
             #Testing
             while timestep < args.test_timesteps:
@@ -288,15 +285,13 @@ def runner():
                 episodic_length = list()
                 deviation_from_center = 0
                 distance_covered = 0
-
-            print("Terminating the run.")
-            sys.exit()
-
     finally:
-        sys.exit()
+        print("Terminating the run.")
+        env.cleanup()
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     try:        
         runner()
     except KeyboardInterrupt:
