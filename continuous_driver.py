@@ -109,6 +109,10 @@ def runner():
     except:
         logging.error("Connection has been refused by the server.")
         ConnectionRefusedError
+    settings = world.get_settings()
+    settings.fixed_delta_seconds = 0.05 # fix sim fps at 20
+    world.apply_settings(settings)
+
     if train:
         env = CarlaEnvironment(client, world,town)
     else:
